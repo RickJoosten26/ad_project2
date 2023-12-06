@@ -1,0 +1,15 @@
+Input:
+The first line has four numbers:
+– The number of road intersections, 1 ≤ v ≤ 10000
+– The number of pumping stations, 1 ≤ w ≤ min(v, 12)
+– The number of roads, 1 ≤ e ≤ 30000
+– The time limit, 1 ≤ t ≤ 20000
+
+Each
+pumping station can pump 200m3 water out of the polder per minute
+
+Then follow w unique lines with a natural number of at most v
+Next, there are e lines each containing three natural numbers. Each line
+contains two road intersections represented as natural numbers of at most
+
+Stap 1: graph initialization.
