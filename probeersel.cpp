@@ -30,9 +30,9 @@ void floydWarshall(int road_intersections, vector<vector<int>>& graph){
 	for (k = 0; k < road_intersections; k++) {
 		for (i = 0; i < road_intersections; i++) {
 			for (j = 0; j < road_intersections; j++) {
-				if (graph[i][j] > (graph[i][k] + graph[k][j])
-					&& (graph[k][j] != INF
-						&& graph[i][k] != INF))
+				if (graph.at(i).at(j) > (graph.at(i).at(k) + graph.at(k).at(j))
+					&& (graph.at(k).at(j) != INF
+						&& graph.at(i).at(k) != INF))
 					graph.at(i).at(j) = graph[i][k] + graph[k][j];
 			}
 		}
@@ -41,12 +41,6 @@ void floydWarshall(int road_intersections, vector<vector<int>>& graph){
 }
 
 int pump_water(vector<vector<int>> graph, vector<int> correct_order, int time){
-	//correct_order = {99, 40, 122, 71, 29, 15};
-	// cout << "order: " <<endl;
-	//  for(int i=0; i < correct_order.size(); i++){
-	//  	cout << correct_order.at(i) << " ";
-	//  }
-	//  cout << "\n";
 	int n = 0;
 	int water_pumped = 0;
 	if(correct_order.at(0) == 1){
@@ -55,71 +49,34 @@ int pump_water(vector<vector<int>> graph, vector<int> correct_order, int time){
 	}
 	else{
 		int begin = graph.at(0).at(correct_order.at(0) -1);
-//		cout << "First step: " << graph.at(0).at(correct_order.at(0) -1) << endl;
-//		cout << time << endl;
 		time -= begin;	
 		time -= 10;
-//		cout << "New time" << time << endl;
 		n++;
 	}
 	for(int i = 0; i +1 < correct_order.size(); i++){
-		// cout << "Time: " << time << endl;
-	 	// cout << "current consideration: " << graph.at(correct_order.at(i) - 1).at(correct_order.at(i+1) - 1) << endl;
-		// cout << "From: " << correct_order.at(i) << "To: " << correct_order.at(i+1) << endl;
-		// cout << "Water pumped before: " << water_pumped << " " << endl;
 		if(time - graph.at(correct_order.at(i) - 1).at(correct_order.at(i+1) - 1) > 0){
 			water_pumped += (graph.at(correct_order.at(i) - 1).at(correct_order.at(i+1) - 1)) * n * PUMPING_LIMIT;
-//			cout << "Water pumped at arrival: " << water_pumped << " " << endl;
 			if(time - 10 > 0){
 				water_pumped += 10 * n * PUMPING_LIMIT;
 				time -= graph.at(correct_order.at(i) - 1).at(correct_order.at(i+1) - 1);
 				time -= 10;
 				n++;
 			}
-			// cout << "Water pumped while changing direction: " << water_pumped << " " << endl;
-			// cout << "New time: " << time <<endl;
-			// cout << "Water pumped right now: " << water_pumped << endl;
-			// cout << "PUMPING STATIONS ACTIVE: " << n << endl;
 		}
 	}
 	if(time > 0){
 		water_pumped += time * PUMPING_LIMIT * n; 	
 	}
-//	cout << "TOTAL: " << water_pumped << endl;
 	return water_pumped;
 }
 
-int shortestPath(vector<vector<int>> graph, vector<int> order){
-	int distance = graph.at(0).at(order.at(0) - 1); 
-	//  cout << "Current order: " << endl;
-	//  for (int i = 0; i < order.size(); i++){
-	//  	cout << order.at(i) << " ";
-	//  }
-	for (int i = 0; i + 1 < order.size(); i++){
-		distance += graph.at(order.at(i) - 1).at(order.at(i+1) - 1);
-	}
-//	cout << " with distance: " << distance << endl;
-	return distance; 
-}
-
-void solution(vector<vector<int>> graph, vector<int> pumping_stations, int& time){
+int water_total(vector<vector<int>> graph, vector<int> pumping_stations, int time){
 	int water_pumped = pump_water(graph, pumping_stations, time);
-	
-	// cout << "ORIGINAL ORDER: ";
-	// for(int i = 0; i < pumping_stations.size(); i++){
-	// 	cout << pumping_stations.at(i) << " ";
-	// } 
-	// cout << '\n';
-	//cout << "first perm water: " << water_pumped << endl;
-	//int min_dist = INF;
-	int min_dist = shortestPath(graph, pumping_stations);
 	vector<int> correct_order = pumping_stations;
 	if(pumping_stations.at(0) == 1){
 		while(next_permutation((pumping_stations.begin()+1), pumping_stations.end())){
-		int current_dist = shortestPath(graph, pumping_stations);
 		int current_water = pump_water(graph, pumping_stations, time);
-		if(current_dist < time && current_water > water_pumped){
-				min_dist = current_dist;
+		if(current_water > water_pumped){
 				correct_order = pumping_stations;
 				water_pumped = current_water;
 			}
@@ -127,26 +84,16 @@ void solution(vector<vector<int>> graph, vector<int> pumping_stations, int& time
 	}
 	else{
 		while(next_permutation(pumping_stations.begin(), pumping_stations.end())){
-			int current_dist = shortestPath(graph, pumping_stations);
 			int current_water = pump_water(graph, pumping_stations, time);
-			if(current_dist < time && current_water > water_pumped){
-				min_dist = current_dist;
+			if(current_water > water_pumped){
 				correct_order = pumping_stations;
 				water_pumped = current_water;
 			}
 		}
 	}
-	// cout << "Correct order: "<<endl;
-	// for(int i = 0; i < correct_order.size(); i++){
-	//   	cout << correct_order.at(i)<<endl;
-	// }
-	// cout << "MINIMUM DISTANCE: " << min_dist << endl;
-
-	// cout << "\n";
-	cout << water_pumped << "\n";
+	return water_pumped;
 }
 
-// Driver's code
 int main(){
 
     int road_intersections, amount_pumping_stations, roads, time_limit;
@@ -178,16 +125,7 @@ int main(){
         
     }
 
-    vector<vector<int>> times(road_intersections, vector<int>(road_intersections, INF));
-    for (int i = 0; i < times.size(); i++){
-		times.at(i).at(i) = 0; 
-	}
-    
-	//printGraph(road_intersections, graph);
 	floydWarshall(road_intersections, graph);
-	//printGraph(road_intersections, graph);
-	//vector<int> correct = {99,40,122,71,29,15};
-	//cout << pump_water(graph, correct, time_limit);
-	solution(graph, pumping_stations, time_limit);
+	cout << water_total(graph, pumping_stations, time_limit);
 	return 0;
 }
