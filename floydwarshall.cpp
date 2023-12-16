@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
+#include <queue>
 using namespace std;
 
 const int PUMPING_LIMIT = 200;
@@ -25,7 +25,6 @@ void printGraph(int road_intersections, vector<vector<int>> graph){
 }
 
 void floydWarshall(int road_intersections, vector<vector<int>>& graph){
-
 	int i, j, k;
 	for (k = 0; k < road_intersections; k++) {
 		for (i = 0; i < road_intersections; i++) {
@@ -37,10 +36,9 @@ void floydWarshall(int road_intersections, vector<vector<int>>& graph){
 			}
 		}
 	}
-
 }
 
-int pump_water(vector<vector<int>> graph, vector<int> correct_order, int time){
+int pump_water(const vector<vector<int>>& graph, vector<int>& correct_order, int time){
 	int n = 0;
 	int water_pumped = 0;
 	if(correct_order.at(0) == 1){
@@ -70,7 +68,7 @@ int pump_water(vector<vector<int>> graph, vector<int> correct_order, int time){
 	return water_pumped;
 }
 
-int water_total(vector<vector<int>> graph, vector<int> pumping_stations, int time){
+int water_total(const vector<vector<int>>& graph, vector<int> pumping_stations, int time){
 	int water_pumped = pump_water(graph, pumping_stations, time);
 	vector<int> correct_order = pumping_stations;
 	if(pumping_stations.at(0) == 1){
@@ -95,7 +93,7 @@ int water_total(vector<vector<int>> graph, vector<int> pumping_stations, int tim
 }
 
 int main(){
-
+	clock_t start = clock();
     int road_intersections, amount_pumping_stations, roads, time_limit;
 
     cin >> road_intersections >> amount_pumping_stations >> roads >> time_limit;
@@ -124,8 +122,11 @@ int main(){
 		}
         
     }
-
 	floydWarshall(road_intersections, graph);
-	cout << water_total(graph, pumping_stations, time_limit);
+	printGraph(road_intersections, graph);
+	cout << water_total(graph, pumping_stations, time_limit) << endl;
+	clock_t end = clock();
+  	double runtime = ((double) (end - start)) / CLOCKS_PER_SEC;
+	cout << runtime << " Seconds" << endl;
 	return 0;
 }
